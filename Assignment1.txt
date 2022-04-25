@@ -1,0 +1,249 @@
+CREATING A TABLE
+
+create table Footballleague(MatchID int primary key, TeamName1 varchar(40), TeamName2 varchar(40), Status varchar(40), WinningTeam varchar(40), Points int);
+insert into Footballleague values(1001,'Italy','france','win','france',4),
+                                 (1002,'Brazil','Portugal','Draw',' ',2),
+								 (1003,'England','Japan','Win','England',4),
+								 (1004,'USA','Russia','Win','Russia',4),
+								 (1005,'Portugal','Italy','Draw',' ',2),
+								 (1006,'Brazil','France','Win','Brazil',4),
+								 (1007,'England','Russia','Win','Russia',4),
+								 (1008,'Japan','USA','Draw',' ',2);
+select * from Footballleague;
+
+--Retrieve all the winning TeamNames
+
+select * from Footballleague where Status='Win';
+
+--Retrieve the details of all matches in which Japan played
+
+select * from Footballleague where TeamName1 ='Japan' AND TeamName2='japan';
+
+select*from Footballleague
+
+-----------------------------------------------------------------------------------------------------------
+football.cs
+
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using Football_League.Models;
+
+namespace Football_League.Controllers
+{
+    public class football : Controller
+    {
+        private masterEntities db = new masterEntities();
+
+       
+
+        // GET: football
+        public ActionResult Index()
+        {
+            return View(db.Footballleagues.ToList());
+        }
+
+        // GET: football/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Footballleague footballleague = db.Footballleagues.Find(id);
+            if (footballleague == null)
+            {
+                return HttpNotFound();
+            }
+            return View(footballleague);
+        }
+
+        // GET: football/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: football/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include = "MatchID,TeamName1,TeamName2,Status,WinningTeam,Points")] Footballleague footballleague)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Footballleagues.Add(footballleague);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(footballleague);
+        }
+
+        // GET: football/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Footballleague footballleague = db.Footballleagues.Find(id);
+            if (footballleague == null)
+            {
+                return HttpNotFound();
+            }
+            return View(footballleague);
+        }
+
+        // POST: football/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "MatchID,TeamName1,TeamName2,Status,WinningTeam,Points")] Footballleague footballleague)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(footballleague).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(footballleague);
+        }
+
+        // GET: football/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Footballleague footballleague = db.Footballleagues.Find(id);
+            if (footballleague == null)
+            {
+                return HttpNotFound();
+            }
+            return View(footballleague);
+        }
+
+        // POST: football/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Footballleague footballleague = db.Footballleagues.Find(id);
+            db.Footballleagues.Remove(footballleague);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
+}
+
+---------------------------------------------------------------------------------------------------------
+index.html
+
+@model IEnumerable<Football_League.Models.Footballleague>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamName1)
+           
+
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamName2)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.WinningTeam)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Points)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.TeamName1)
+            <asp:TextBox id="txtmatch" runat="server"></asp:TextBox>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TeamName2)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.WinningTeam)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Points)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.MatchID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.MatchID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.MatchID })
+        </td>
+    </tr>
+}
+
+</table>
+
+--------------------------------------------------------------------------------------------------------------
+Routeconfig.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+
+namespace Football_League
+{
+    public class RouteConfig
+    {
+        public static void RegisterRoutes(RouteCollection routes)
+        {
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            routes.MapRoute 
+                
+               name: "Default",
+                url: "{controller}/{action}/{id}",
+  defaults: new { controller = "football", action = "Index", id = UrlParameter.Optional }
+            );
+        }
+    }
+}
+
